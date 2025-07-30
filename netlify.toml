@@ -1,25 +1,2 @@
-[build]
-  publish = "."
-  functions = "netlify/functions"
-
-[[redirects]]
-  from = "/api/generate"
-  to = "/.netlify/functions/generateCode"
-  status = 200
-
-[[redirects]]
-  from = "/api/validate"
-  to = "/.netlify/functions/validateCode"
-  status = 200
-
-[[redirects]]
-  from = "/acceso"
-  to = "/pruebaDis.html"
-  status = 200
-
-  [functions]
-  directory = "netlify/functions"
-
 [functions]
-  node_bundler = "esbuild"
-  directory = "netlify/functions"
+directory = "netlify/functions"
