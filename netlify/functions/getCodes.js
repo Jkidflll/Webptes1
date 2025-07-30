@@ -1,27 +1,43 @@
-const fs = require('fs');
-const path = require('path');
+const { google } = require('googleapis');
+const sheets = google.sheets('v4');
 
-exports.handler = async () => {
-  const dataPath = path.resolve(__dirname, 'codes.json');
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+const SHEET_ID = process.env.SHEET_ID;
+const SHEET_NAME = 'Hoja1';
+
+exports.handler = async function () {
+  const auth = new google.auth.JWT(
+    process.env.CLIENT_EMAIL,
+    null,
+    process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
+    SCOPES
+  );
 
   try {
-    if (fs.existsSync(dataPath)) {
-      const data = fs.readFileSync(dataPath);
-      const codes = JSON.parse(data);
-      return {
-        statusCode: 200,
-        body: JSON.stringify(codes),
-      };
-    } else {
-      return {
-        statusCode: 200,
-        body: JSON.stringify([]),
-      };
-    }
+    const response = await sheets.spreadsheets.values.get({
+      auth,
+      spreadsheetId: SHEET_ID,
+      range: `${SHEET_NAME}!A:D`,
+    });
+
+    const rows = response.data.values || [];
+
+    const data = rows.slice(1).map(([name, phone, code, expiresAt]) => ({
+      name,
+      phone,
+      code,
+      expiresAt,
+    }));
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data),
+    };
   } catch (err) {
+    console.error('Error leyendo de Sheets:', err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Error al leer los datos." }),
+      body: JSON.stringify({ error: 'Error leyendo de Sheets' }),
     };
   }
 };
