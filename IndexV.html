@@ -1,3 +1,6 @@
+
+   
+   
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -89,5 +92,15 @@
         const data = await res.json();
 
         if (data.valid) {
-          window.location.href
-
+          window.location.href = "pruebaDis.html";
+        } else {
+          document.getElementById('msg').innerText = "Código inválido o expirado.";
+        }
+      } catch (error) {
+        document.getElementById('msg').innerText = "Error de conexión con el servidor.";
+        console.error("Error:", error);
+      }
+    });
+  </script>
+</body>
+</html>
